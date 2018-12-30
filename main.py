@@ -16,7 +16,8 @@ while menuFlag:
     print("5. Account Standings")
     print("6. Quit")
 
-    # TODO: Fix 1, 3, 4,
+    # TODO: Fix 1, 4
+    # TODO: prediction creation causes errors with number of shares, refactor to reflect bundle creation
 
     choice = input()
 
@@ -24,11 +25,35 @@ while menuFlag:
         account = input("Enter account name: ")
         player_account = None
         for player in market.players:
-            if player.name == name:
+            if player.name == account:
+                success_flag = False
                 player_account = player
-        print(player_account.capital)
+                print("What would you like to do?")
+                print("1. Buy Bundle")
+                print("2. Make Bid")
+                print("3. Make Ask")
+                selection = input()
+                if selection == "1":
+                    prediction_name = input("What prediction would you like to buy a bundle of? ")
+                    for prediction in market.predictions:
+                        if prediction.name == prediction_name:
+                            player_account.buy_bundle(prediction.name)
+                            print("Success")
+                            success_flag = True
+                    if not success_flag:
+                        print("Error: No Prediction Found")
+                if selection == "2":
+                    prediction_name = input("What prediction shares would you like to make a bid for? ")
+                    for prediction in market.predictions:
+                        if prediction.name == prediction_name:
+                            # print("Success")
+                            # success_flag = True
+                            # continue
+                    # if not success_flag:
+                        # print("Error: No Prediction Found")
 
-    if choice == "2":
+
+if choice == "2":
         print("What is your player's name?")
         name = input()
         if name in market.players:
@@ -39,7 +64,7 @@ while menuFlag:
 
     if choice == "3":
         flag = False
-        name = input("What is the prediction name?")
+        name = input("What is the prediction name? ")
         for prediction in market.predictions:
             if name == prediction.name:
                 print("Error: Name already in use")
@@ -65,6 +90,5 @@ while menuFlag:
         menuFlag = False
 
     market.check_orders()
-    #TODO: add protection for empty orders 
 
 

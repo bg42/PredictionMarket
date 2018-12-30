@@ -1,13 +1,16 @@
 class Market:
     # class representing the market as a whole. Stores player objects, active predictions, and market orders.
-    def __init__(self):
-        self.predictions = []
-        self.players = []
-        self.bids = []
-        self.asks = []
+    predictions = []
+    players = []
+    bids = []
+    asks = []
+
+    def return_predictions(self):
+        return self.predictions
 
     def add_prediction(self, name):
-        self.predictions.append(Prediction(name, 100))
+        self.predictions.append(Prediction(name, 10000))
+        # hard coded value of 10000 shares for each prediction (this is a theoretical upper limit)
 
     def add_player(self, name):
         self.players.append(Player(name, 20))
@@ -52,19 +55,19 @@ class Player (Market):
         self.ownedShares = []
 
     def buy_bundle(self, name):
-        for prediction in super.predictions:
+        for prediction in Market.predictions:
             if prediction.name == name:
                 self.ownedShares.append(prediction.noShares.pop())
                 self.ownedShares.append(prediction.yesShares.pop())
                 self.capital -= 1
 
-    def buy_share(self, name, bid):
-        order = Order(self, True, name, bid)
+    def buy_share(self, name, bid, yes_or_no):
+        order = Order(self, True, yes_or_no, name, bid)
         super.bids.append(order)
 
-    def sell_share(self, name, ask):
+    def sell_share(self, name, ask, yes_or_no):
         # TODO: add checks for share existence
-        order = Order(self, False, name, ask)
+        order = Order(self, False, yes_or_no, name, ask)
         self.asks.append(order)
 
 
@@ -77,9 +80,9 @@ class Prediction:
         self.totalShares = total_shares
         self.yesShares = []
         self.noShares = []
-        for i in range(total_shares // 2):
-            yes_share = Share(self, True, 1.00, -1)
-            no_share  = Share(self, False, 1.00, -1)
+        for i in range(total_shares):
+            yes_share = Share(True, 1.00, -1)
+            no_share  = Share(False, 1.00, -1)
             self.yesShares.append(yes_share)
             self.noShares.append(no_share)
             # default of 1.00 for value, changes to 0.00 if option condition unmet
@@ -102,8 +105,9 @@ class Share:
 class Order:
 
     # Stores an order (buy or sell) made by a player
-    def __init__(self, player, buy_or_sell, share, price):
+    def __init__(self, player, buy_or_sell, yes_or_no, share, price):
         self.issuer = player
         self.buyOrSell = buy_or_sell
+        self.yesOrNo = yes_or_no
         self.shareName = share
         self.price = price
